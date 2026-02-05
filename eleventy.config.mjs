@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { minify } from 'terser'
+import { EleventyHtmlBasePlugin } from '@11ty/eleventy'
 import * as util from './eleventy.util.mjs'
 import * as filters from './eleventy.filters.mjs'
 
@@ -273,6 +274,12 @@ export default function (eleventyConfig) {
   const devOrigin = process.env.DEV_ORIGIN || 'http://localhost:8080'
   const siteOrigin = isProd ? prodOrigin : devOrigin
 
+  // Apply pathPrefix to all URLs for subdirectory deployments (e.g., GitHub Pages project pages)
+  const pathPrefix = process.env.PATH_PREFIX || '/'
+  if (pathPrefix !== '/') {
+    eleventyConfig.addPlugin(EleventyHtmlBasePlugin)
+  }
+
   eleventyConfig.addPassthroughCopy('assets')
   eleventyConfig.addPassthroughCopy({ static: isProd ? 'static_' + util.gitHash : 'static' })
 
@@ -522,6 +529,7 @@ export default function (eleventyConfig) {
       input: '.',
       output: '_site',
     },
+    pathPrefix: process.env.PATH_PREFIX || '/',
     passthroughFileCopy: true,
   }
 }

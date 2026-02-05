@@ -1,11 +1,11 @@
-name: Rebuild on push to gh-pages
+name: Rebuild on push to preview
 
 on:
   workflow_dispatch:
   push:
-    branches: ["gh-pages"]
+    branches: ["preview"]
   pull_request:
-    branches: ["gh-pages"]
+    branches: ["preview"]
 
 permissions:
   contents: write
@@ -26,6 +26,8 @@ jobs:
 
       - name: Build
         run: make build
+        env:
+          PATH_PREFIX: ${{ github.repository_owner != 'packagecontrol' && format('/{0}', github.event.repository.name) || '/' }}
 
       - name: Lint
         run: make lint
